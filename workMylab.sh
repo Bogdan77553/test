@@ -3,35 +3,33 @@
 countStrings=$(awk '/found/{print $0}' mylab.cpp)
 count=$(echo $countStrings | awk '{aq=$3; printf "%d",aq}')
 
-workStrings=$(awk '/ip/{print $0}' mylab.cpp)
-echo "w=$workStrings" > tmp.txt
+echo "" | awk '{printf "{\n\"Board\": [\n"}' > json
 
-#echo $count
+i=1
+awk '/device \[/{print $0}' mylab.cpp > temp
+      
 
-echo "" | awk '{printf "{\n\"Dev\": [\n"}'
+FILE="temp"
+while read line; do
+     echo "{" >> json
+     echo "$line"| awk '{a=$2; c=$6; d=$4; 
+     printf "\"dev\": \"%s\",\n \"mac\": \"%s\",\n \"ip\": \"%s\"\n",a,c,d}' >> json
+     
+     printf "}" >> json
+     if [ $i != $count ]; then
+        echo "," >> json
+     fi
+     printf "\n" >> json
 
-
-c=0
-i=0
-while [ "$c" -lt "$count" ]; do
-  
-   #echo $workStrings | awk '{a=$2; c=$6; d=$4; 
-   #printf "dev:%s mac=%s ip=%s\n",a,c,d}'
-   
-   c=$(($c+1))
    i=$(($i+1))
-   
-   printf "dev $i"
 
-   if [ $i != $count ]; then
-      echo ","
-   fi
-done
+done < $FILE 
+
 
 #awk '{a=$2; c=$6; d=$4;
 #{printf "{\n\"devNumber\": \"%s\",\n\"mac\": \"%s\",\n\"ip\": \"%s\",\n},",a,c,d}' tmp.txt >> json
 
-echo "" | awk '{printf "\n]\n}\n"
-}'
+echo "" | awk '{printf "\n]\n}\n" 
+}' >> json
 
-#rm tmp.txt
+#rm -f temp
