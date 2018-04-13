@@ -8,12 +8,15 @@ echo "" | awk '{printf "{\n\"Board\": [\n"}' > json
 i=1
 awk '/device \[/{print $0}' mylab.cpp > temp
       
-
 FILE="temp"
 while read line; do
      echo "{" >> json
-     echo "$line"| awk '{a=$2; c=$6; d=$4; 
-     printf "\"dev\": \"%s\",\n \"mac\": \"%s\",\n \"ip\": \"%s\"\n",a,c,d}' >> json
+     asd=$(echo "$line" | sed 's/\[\]/0/g') 
+     asd=$(echo $asd | sed 's/\[//g; s/\]//g')
+     
+     echo "$asd"| awk '{
+     a=$2; c=$6; d=$4; k=$14; 
+     printf "\"dev\": \"%s\",\n \"mac\": \"%s\",\n \"ip\": \"%s\",\n\"kay\": \"%s\"\n",a,c,d,k}' >> json
      
      printf "}" >> json
      if [ $i != $count ]; then
@@ -21,7 +24,7 @@ while read line; do
      fi
      printf "\n" >> json
 
-   i=$(($i+1))
+     i=$(($i+1))
 
 done < $FILE 
 
